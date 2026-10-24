@@ -7,6 +7,10 @@
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {
+    "test": "tsc -p tsconfig.test.json && node --import ./.test-dist/test/setup.js --test .test-dist/src/app.controller.spec.js .test-dist/test/app.e2e-spec.js .test-dist/test/storage.spec.js",
+    "test:e2e": "npm test",
+    "test:migrations": "tsc -p tsconfig.test.json && node --test .test-dist/test/migrations.e2e-spec.js",
+    "migration:run:prod": "node node_modules/typeorm/cli.js -d dist/db/data-source.js migration:run",
     "build": "nest build",
     "deploy": "nest deploy",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -20,6 +24,7 @@
     "migration:create": "npx typeorm migration:create"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1156.0",
     "@nestjs/common": "^12.0.1",
     "@nestjs/core": "^12.0.1",
     "@nestjs/platform-express": "^12.0.1",
@@ -42,6 +47,7 @@
     "@nestjs/testing": "^12.0.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.0",
+    "@types/multer": "^2.3.0",
     "@types/node": "^24.0.0",
     "@types/nodemailer": "^8.0.1",
     "@types/supertest": "^7.0.0",

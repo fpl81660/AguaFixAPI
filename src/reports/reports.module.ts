@@ -4,9 +4,10 @@ import { ReportsController } from './reports.controller.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Report } from './entities/report.entity.js';
 import { EmailModule } from '../email/email.module.js';
+import { StorageModule } from '../storage/storage.module.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Report]), EmailModule],
+  imports: [TypeOrmModule.forFeature([Report]), EmailModule, StorageModule],
   controllers: [ReportsController],
   providers: [ReportsService],
 })

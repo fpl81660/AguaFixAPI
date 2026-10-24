@@ -15,4 +15,15 @@ export const envs = {
     user: env.get('MAILER_USER').required().asString(),
     token: env.get('MAILER_TOKEN').required().asString(),
   },
+
+  storage: {
+    region: env.get('AWS_REGION').default('us-east-1').asString(),
+    bucket: env.get('AWS_S3_BUCKET').asString(),
+  },
+
+  reports: {
+    notificationEmail: process.env.REPORTS_NOTIFICATION_EMAIL?.trim()
+      ? env.get('REPORTS_NOTIFICATION_EMAIL').asEmailString()
+      : undefined,
+  },
 };

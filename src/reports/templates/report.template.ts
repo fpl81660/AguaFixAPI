@@ -1,6 +1,17 @@
 import { CreateReportDto } from '../dtos/create-report.dto.js';
 
-export const generateReportTemplate = (dto: CreateReportDto): string => {
+const escapeHtml = (value: string): string =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+export const generateReportTemplate = (
+  dto: CreateReportDto,
+  photoUrl: string,
+): string => {
   return `
     <!DOCTYPE html>
     <html lang="es">
@@ -26,21 +37,23 @@ export const generateReportTemplate = (dto: CreateReportDto): string => {
         <table>
           <tr>
             <th>Dirección:</th>
-            <td>${dto.address}</td>
+            <td>${escapeHtml(dto.address)}</td>
           </tr>
           <tr>
             <th>Descripción:</th>
-            <td>${dto.description}</td>
+            <td>${escapeHtml(dto.description)}</td>
           </tr>
           <tr>
             <th>Severidad:</th>
-            <td class="severity-${dto.severity}">${dto.severity.toUpperCase()}</td>
+            <td class="severity-${escapeHtml(dto.severity)}">${escapeHtml(dto.severity.toUpperCase())}</td>
           </tr>
           <tr>
             <th>Teléfono de Contacto:</th>
-            <td>${dto.reporterPhone}</td>
+            <td>${escapeHtml(dto.reporterPhone)}</td>
           </tr>
         </table>
+        <p>Foto de la fuga:</p>
+        <img src="${escapeHtml(photoUrl)}" alt="Foto de la fuga reportada" width="560" style="display: block; max-width: 100%; height: auto; border-radius: 8px;">
         
         <p>Por favor atender a la brevedad posible.</p>
       </div>

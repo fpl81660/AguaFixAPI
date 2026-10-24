@@ -3,20 +3,58 @@ services:
     image: postgis/postgis:16-master
     container_name: agua_fix_db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: agua_fix_db
+      POSTGRES_USER: ${DB_USER:?Configura DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Configura DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:?Configura DB_NAME}
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  migrations:
+    image: ${DOCKER_USER:?Configura DOCKER_USER}/aguafix-api:latest
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    command:
+      [
+        'node',
+        'node_modules/typeorm/cli.js',
+        '-d',
+        'dist/db/data-source.js',
+        'migration:run',
+      ]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: 'no'
+
+  api:
+    image: ${DOCKER_USER:?Configura DOCKER_USER}/aguafix-api:latest
+    env_file: .env
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+    ports:
+      - '3000:3000'
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
     restart: unless-stopped
 
   redis:
     image: redis
     container_name: agua_fix_redis
+    profiles: ['redis']
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redisdata:/data
     restart: unless-stopped

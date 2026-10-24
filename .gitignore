@@ -10,4 +10,8 @@ npm-debug.log*
 /coverage
 
 .env
+.env.*
+!.env.example
+/.test-dist
+*.tsbuildinfo
 /bruno
